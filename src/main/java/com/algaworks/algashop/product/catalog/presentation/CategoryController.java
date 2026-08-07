@@ -2,7 +2,7 @@ package com.algaworks.algashop.product.catalog.presentation;
 
 import com.algaworks.algashop.product.catalog.application.PageModel;
 import com.algaworks.algashop.product.catalog.application.category.management.CategoryInput;
-import com.algaworks.algashop.product.catalog.application.category.management.CategoryManagementService;
+import com.algaworks.algashop.product.catalog.application.category.management.CategoryManagementApplicationService;
 import com.algaworks.algashop.product.catalog.application.category.query.CategoryDetailOutput;
 import com.algaworks.algashop.product.catalog.application.category.query.CategoryQueryService;
 import jakarta.validation.Valid;
@@ -18,7 +18,7 @@ import java.util.UUID;
 public class CategoryController {
 
     private final CategoryQueryService categoryQueryService;
-    private final CategoryManagementService categoryManagementService;
+    private final CategoryManagementApplicationService categoryManagementService;
 
     @GetMapping
     public PageModel<CategoryDetailOutput> filter(@RequestParam(defaultValue = "0") Integer page,
