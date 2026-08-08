@@ -1,12 +1,12 @@
 package com.algaworks.algashop.product.catalog.domain.model.category;
 
 import com.algaworks.algashop.product.catalog.domain.model.IdGenerator;
-import io.micrometer.common.util.StringUtils;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.OffsetDateTime;
@@ -27,15 +27,25 @@ public class Category {
 
     private Boolean enabled;
 
-//    private OffsetDateTime createdAt;
-//
-//    private OffsetDateTime updatedAt;
+    @Version
+    private Long version;
+
+    @CreatedDate
+    private OffsetDateTime createdAt;
+
+    @LastModifiedDate
+    private OffsetDateTime updatedAt;
+
+    @CreatedBy
+    private UUID createdByUserId;
+
+    @LastModifiedBy
+    private UUID lastModifiedByUserId;
 
     public Category(String name, Boolean enabled) {
         this.id = IdGenerator.generateTimeBasedUUID();
         this.setName(name);
         this.setEnabled(enabled);
-        //this.createdAt = OffsetDateTime.now();
     }
 
     public void setName(String name) {
@@ -49,5 +59,4 @@ public class Category {
         Objects.requireNonNull(enabled);
         this.enabled = enabled;
     }
-
 }
