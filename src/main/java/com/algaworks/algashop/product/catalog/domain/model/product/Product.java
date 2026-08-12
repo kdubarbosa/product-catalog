@@ -3,6 +3,7 @@ package com.algaworks.algashop.product.catalog.domain.model.product;
 import com.algaworks.algashop.product.catalog.domain.model.DomainException;
 import com.algaworks.algashop.product.catalog.domain.model.IdGenerator;
 import com.algaworks.algashop.product.catalog.domain.model.category.Category;
+import com.algaworks.algashop.product.catalog.infrastructure.utility.Slugfier;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,6 +32,8 @@ public class Product {
     private UUID id;
 
     private String name;
+
+    private String slug;
 
     private String brand;
 
@@ -83,6 +86,7 @@ public class Product {
             throw new IllegalArgumentException();
         }
         this.name = name;
+        this.slug = Slugfier.slugify(name);
     }
 
     public void setBrand(String brand) {
