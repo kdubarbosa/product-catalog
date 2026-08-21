@@ -4,5 +4,20 @@ spring:
   application:
     name: product-catalog
   mongodb:
-    representation.uuid: standard
     uri: mongodb://root:algashop@localhost:27018/product_catalog?authSource=admin
+
+logging:
+  level:
+    org.mongodb.driver.protocol.command: DEBUG
+    org.mongodb.driver.protocol.query: DEBUG
+    org.mongodb.driver.connection: DEBUG
+
+algashop:
+  data-load:
+    enabled: true
+    auto-drop: true
+    sources:
+      - location: db/testdata/categories.json
+        collection: categories
+      - location: db/testdata/products.json
+        collection: products

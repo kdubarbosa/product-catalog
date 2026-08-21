@@ -11,10 +11,13 @@ import com.algaworks.algashop.product.catalog.domain.model.product.Product;
 import com.algaworks.algashop.product.catalog.domain.model.product.ProductNotFoundException;
 import com.algaworks.algashop.product.catalog.domain.model.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.aggregation.AggregationExpressionCriteria;
+import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,8 @@ public class ProductQueryServiceImpl implements ProductQueryService {
     private final Mapper mapper;
 
     private final MongoOperations mongoOperations;
+
+    private static final String findWordRegex = "(?i)%s"; //%s é do java
 
     @Override
     public ProductDetailOutput findById(UUID productId) {
@@ -61,6 +66,7 @@ public class ProductQueryServiceImpl implements ProductQueryService {
         List<ProductSummaryOutput> productOutputs = products.stream()
                 .map(p -> mapper.convert(p, ProductSummaryOutput.class))
                 .collect(Collectors.toList());
+
         return PageModel.<ProductSummaryOutput>builder()
                 .content(productOutputs)
                 .number(pageRequest.getPageNumber())
@@ -94,6 +100,42 @@ public class ProductQueryServiceImpl implements ProductQueryService {
                 query.addCriteria(Criteria.where("addedAt").lte(filter.getAddedAtTo()));
             }
         }
+
+        if (filter.getHasDiscount() != null) {
+            if(filter.getHasDiscount()) {
+                query.addCriteria(AggregationExpressionCriteria.whereExpr(
+                        ComparisonOperators.valueOf("$salePrice")
+                                .lessThan("$regularPrice")
+                ));
+            } else {
+                query.addCriteria(AggregationExpressionCriteria.whereExpr(
+                        ComparisonOperators.valueOf("$salePrice")
+                                .notEqualTo("$regularPrice")
+                ));
+            }
+        }
+
+        if (filter.getInStock() != null) {
+            if (filter.getInStock()) {
+                query.addCriteria(Criteria.where("quantityInStock").gt(0));
+            } else {
+                query.addCriteria(Criteria.where("quantityInStock").is(0));
+            }
+        }
+
+        if (filter.getCategoriesId() != null && filter.getCategoriesId().length > 0) {
+            query.addCriteria(Criteria.where("categoriesId").in((Object[]) filter.getCategoriesId()));
+        }
+
+        if (StringUtils.isNotBlank(filter.getTerm())) {
+            String regexExpression = String.format(findWordRegex, filter.getTerm());
+            query.addCriteria(new Criteria().orOperator(
+                    Criteria.where("name").regex(regexExpression),
+                    Criteria.where("description").regex(regexExpression),
+                    Criteria.where("brand").regex(regexExpression)
+            ));
+        }
+
 
         return query;
     }
