@@ -20,7 +20,7 @@ public class ModelMapperConfig {
             Slugfier.slugify(ctx.getSource());
 
     private final Converter<String, String> fromStringToShortStringConverter = ctx ->
-            StringUtils.abbreviate(ctx.getSource(), 15);
+            StringUtils.abbreviate(ctx.getSource(), 50);
 
     @Bean
     public Mapper mapper() {
@@ -38,15 +38,6 @@ public class ModelMapperConfig {
         modelMapper.createTypeMap(Product.class, ProductDetailOutput.class)
                 .addMappings(mapping -> mapping.using(fromStringToSlugConverter)
                         .map(Product::getName, ProductDetailOutput::setSlug)
-                );
-
-        modelMapper.createTypeMap(Product.class, ProductSummaryOutput.class)
-                .addMappings(mapping -> {
-                            mapping.using(fromStringToSlugConverter)
-                                    .map(Product::getName, ProductSummaryOutput::setSlug);
-                            mapping.using(fromStringToShortStringConverter)
-                                    .map(Product::getDescription, ProductSummaryOutput::setShortDescription);
-                        }
                 );
     }
 

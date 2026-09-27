@@ -9,4 +9,3 @@ public class ProductNotFoundException extends DomainEntityNotFoundException {
         super(String.format("Product with id %s was not found", productId));
     }
 }
-

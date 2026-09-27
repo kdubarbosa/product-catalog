@@ -6,9 +6,9 @@ import com.fasterxml.uuid.impl.TimeBasedEpochRandomGenerator;
 import java.util.UUID;
 
 public class IdGenerator {
-
     private static final TimeBasedEpochRandomGenerator timeBasedEpochRandomGenerator
             = Generators.timeBasedEpochRandomGenerator();
+
 
     private IdGenerator() {
     }
